@@ -1,0 +1,7 @@
+env_yourls
+testing/__pycache__
+*.pyc
+*.swp
+build
+dist
+yourls_client/build
