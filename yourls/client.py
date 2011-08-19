@@ -43,22 +43,36 @@ class YourlsKeywordError(Exception):
 
 class YourlsClient():
 
-    def __init__(self, apiurl, username=None, password=None):
+    def __init__(self, apiurl, username=None, password=None, token=None):
+        """The use of a username/password combo or a signature token is required
+
+        :param apiurl: The location of the api php file
+        :param username: The username to login with (not needed with signature token)
+        :param password: The password to login with (not needed with signature token)
+        :param token: The signature token to use (not needed with username/password combo)
+        """
+
         if apiurl is None:
             print "api url is required"
             sys.exit(2)
         else:
             self.apiurl = apiurl
 
+        self.data_format = 'json'
+
         if username is None or password is None:
-            print "username and password are required"
-            sys.exit(2)
+            if token is None:
+                print "username and password or signature token are required"
+                sys.exit(2)
+            else:
+                self.std_args = {'signature' : token, 'format' : self.data_format}
+
         else:
             self.username = username
             self.password = password
+            self.std_args = {'username':self.username, 'password':self.password,
+                             'format':self.data_format}
 
-        self.data_format = 'json'
-        self.std_args = {'username':self.username, 'password':self.password, 'format':self.data_format}
 
     def _send_request(self, args):
         urlargs = urllib.urlencode(self._make_args(args))
@@ -95,8 +109,35 @@ class YourlsClient():
         return raw_data['shorturl']
 
 
-    def get_stats(self, shorturl):
-        raise NotImplementedError('get_stats has not yet been implemented')
-
     def expand(self, shorturl):
-        raise NotImplementedError('expand has not yet been implemented')
+        """Expand a shortened URL to its original form
+
+        :param shorturl: The URL to expand
+        :returns: str -- The expanded URL
+        :raises: YourlsKeywordError
+
+        """
+        args = {'action' : 'expand', 'shorturl' : shorturl, 'format' : 'json'}
+
+        raw_data = json.loads(self._send_request(args))
+        if re.search('[Ee]rror: short URL not found', raw_data['message']) is not None:
+            raise YourlsKeywordError(shorturl, raw_data['message'])
+
+        return raw_data['longurl']
+
+    def get_url_stats(self, shorturl):
+        """Get statistics about a shortened URL
+
+        :param shorturl: The URL to expand
+        :returns: a list of stuff - FIXME, this isn't complete
+        :raises: YourlsKeywordError
+
+        """
+
+        args = {'action' : 'url-stats', 'shorturl' : shorturl, 'format' : 'json'}
+
+        raw_data = json.loads(self._send_request(args))
+        if re.search('[Ee]rror: short URL not found', raw_data['message']) is not None:
+            raise YourlsKeywordError(shorturl, raw_data['message'])
+
+        return raw_data['link']

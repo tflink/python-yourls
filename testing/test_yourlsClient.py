@@ -31,6 +31,7 @@ test_apiurl = test_baseurl + 'yourls-api.php'
 test_user = 'username'
 test_pass = 'password'
 test_urltitle = 'testshort'
+test_numclicks = 3
 
 test_url1 = 'http://testhost.fedoraproject.org/dir/subdir/file.html'
 test_url2 = 'http://testhost.fedoraproject.org/dir/subdir/anotherfile.html'
@@ -48,13 +49,46 @@ def make_json_shorten(status, url, shorturl, code = None, message = None):
         data['code'] = code
     return json.dumps(data)
 
-def mock_shorturl(args):
-    for short, url in url_data.iteritems():
-        if args['url'] == url:
-            return make_json_shorten('success', url, test_baseurl + str(short))
+def make_json_expand(baseurl, keyword, longurl):
+    data = {'shorturl':(baseurl+str(keyword)), 'longurl':longurl, 'keyword':keyword, 'message':'success', 'statusCode':200}
+    return json.dumps(data)
+
+def make_json_urlstats(baseurl, keyword, longurl, clicks, isError = False):
+    if not isError:
+        url_data = {'title' : 'Testing Link Title' , 'url' : longurl,
+                    'ip' : '127.0.0.1', 'shorturl' : test_baseurl + str(keyword),
+                    'clicks' : clicks }
+        data = {'message' : 'success', 'link' : url_data, 'statusCode' : 200}
+    else:
+        data = {'message' : 'Error: short URL not found', 'statusCode' : 404}
+
+    return json.dumps(data)
+
+def mock_request(args):
+    if args['action'] == 'shorturl':
+        for short, url in url_data.iteritems():
+            if args['url'] == url:
+                return make_json_shorten('success', url, test_baseurl + str(short))
+    elif args['action'] == 'expand':
+        for short, url in url_data.iteritems():
+            if args['shorturl'] == short:
+                return make_json_expand(test_baseurl, short, url)
+    elif args['action'] == 'url-stats':
+        for short, url in url_data.iteritems():
+            if args['shorturl'] == short:
+                return make_json_urlstats( test_baseurl, short, url, test_numclicks,
+                                           isError = False)
 
 def mock_short_keyworderror(args):
     return make_json_shorten('fail', test_url1, 1, code = 'error:url', message = 'Short URL 1 already exists in database or is reserved')
+
+def mock_request_404(args):
+    code_name = "statusCode"
+    if args['action'] == 'expand':
+        code_name = "errorCode"
+    return json.dumps({ code_name : 404, 'message' : 'Error: short URL not found',
+                        'keyword' : args['shorturl']})
+
 
 class TestYourlsClient():
 
@@ -62,8 +96,7 @@ class TestYourlsClient():
         self.testclient = yourls.client.YourlsClient(test_apiurl, test_user, test_pass)
 
     def test_shorten_url(self, monkeypatch):
-        
-        monkeypatch.setattr(self.testclient, '_send_request', mock_shorturl)
+        monkeypatch.setattr(self.testclient, '_send_request', mock_request)
 
         ref_shorturl = test_baseurl + '1'
         test_url = 'http://testhost.fedoraproject.org/dir/subdir/file.html'
@@ -72,7 +105,7 @@ class TestYourlsClient():
         assert shorturl == ref_shorturl
 
     def test_shorten_second_url(self, monkeypatch):
-        monkeypatch.setattr(self.testclient, '_send_request', mock_shorturl)
+        monkeypatch.setattr(self.testclient, '_send_request', mock_request)
 
         ref_shorturl = test_baseurl + '2'
         test_url = 'http://testhost.fedoraproject.org/dir/subdir/anotherfile.html'
@@ -88,8 +121,37 @@ class TestYourlsClient():
 
         assert ref_args == test_args
 
-#    with pytest.raises(Exception) as excinfo:
+#    with pytest.raises(YourlsKeywordError):
     @pytest.mark.xfail
     def test_reserved_keyword(self, monkeypatch):
         monkeypatch.setattr(self.testclient, '_send_request', mock_short_keyworderror)
         self.testclient.shorten(test_url1)
+
+    def test_expand_url(self, monkeypatch):
+        monkeypatch.setattr(self.testclient, '_send_request', mock_request)
+        ref_shorturl = 1
+
+        test_longurl = self.testclient.expand(ref_shorturl)
+
+        assert test_longurl == url_data[ref_shorturl]
+
+    @pytest.mark.xfail
+    def test_expand_nonexistant_url(self, monkeypatch):
+        monkeypatch.setattr(self.testclient, '_send_request', mock_request_404)
+        ref_madeupkeyword= 'blahdontexist'
+        self.testclient.expand(ref_madeupkeyword)
+
+    def test_url_stats(self, monkeypatch):
+        monkeypatch.setattr(self.testclient, '_send_request', mock_request)
+        ref_shorturl = 1
+
+        test_data = self.testclient.get_url_stats(ref_shorturl)
+
+        assert test_data['clicks'] == test_numclicks
+
+    @pytest.mark.xfail
+    def test_stats_nonextant_url(self, monkeypatch):
+        monkeypatch.setattr(self.testclient, '_send_request', mock_request_404)
+        ref_madeupkeyword= 'blahdontexist'
+        self.testclient.get_url_stats(ref_madeupkeyword)
+
