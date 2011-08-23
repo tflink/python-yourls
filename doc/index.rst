@@ -22,7 +22,7 @@ The code can be checked out from the github repository:
   * ``git clone git://github.com/tflink/python-yourls.git``
 
 Or the code can be downloaded as a tarball from github:
-  * https://github.com/downloads/tflink/python-yourls/python-yourls-v0.1.tar.gz
+  * https://github.com/downloads/tflink/python-yourls/python-yourls-0.1.1.tar.gz
 API Documentation
 -----------------
 .. automodule:: client
