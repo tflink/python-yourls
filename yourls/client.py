@@ -85,13 +85,15 @@ class YourlsClient():
     def _make_args(self, new_args):
         return dict(self.std_args.items() + new_args.items())
 
-    def shorten(self, url, custom = None):
+    def shorten(self, url, custom = None, title = None):
         """Request a shortened URL from YOURLS with an optional keyword request
 
         :param url: The URL to shorten
         :type url: str
         :param custom: The custom keyword to request
         :type custom: str
+        :param title: Use the given title instead of download it from the URL, this will increase performances
+        :type title: str
         :returns: str -- The short URL
         :raises: YourlsKeywordError
 
@@ -100,6 +102,9 @@ class YourlsClient():
 
         if custom is not None:
             args['keyword'] = custom
+            
+        if title is not None:
+            args['title'] = title
 
         raw_data = json.loads(self._send_request(args))
         if raw_data['status'] == 'fail':
