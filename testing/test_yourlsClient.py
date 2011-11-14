@@ -23,7 +23,7 @@
 
 import pytest
 import yourls.client
-from yourls.client import YourlsKeywordError as YourlsKeywordError
+from yourls.client import YourlsKeywordError
 import json
 
 test_baseurl = 'http://localhost/yourls/'
@@ -121,11 +121,10 @@ class TestYourlsClient():
 
         assert ref_args == test_args
 
-#    with pytest.raises(YourlsKeywordError):
-    @pytest.mark.xfail
     def test_reserved_keyword(self, monkeypatch):
         monkeypatch.setattr(self.testclient, '_send_request', mock_short_keyworderror)
-        self.testclient.shorten(test_url1)
+        with pytest.raises(YourlsKeywordError):
+            self.testclient.shorten(test_url1)
 
     def test_expand_url(self, monkeypatch):
         monkeypatch.setattr(self.testclient, '_send_request', mock_request)
@@ -135,11 +134,11 @@ class TestYourlsClient():
 
         assert test_longurl == url_data[ref_shorturl]
 
-    @pytest.mark.xfail
     def test_expand_nonexistant_url(self, monkeypatch):
         monkeypatch.setattr(self.testclient, '_send_request', mock_request_404)
         ref_madeupkeyword= 'blahdontexist'
-        self.testclient.expand(ref_madeupkeyword)
+        with pytest.raises(YourlsKeywordError):
+            self.testclient.expand(ref_madeupkeyword)
 
     def test_url_stats(self, monkeypatch):
         monkeypatch.setattr(self.testclient, '_send_request', mock_request)
@@ -149,11 +148,11 @@ class TestYourlsClient():
 
         assert test_data['clicks'] == test_numclicks
 
-    @pytest.mark.xfail
     def test_stats_nonextant_url(self, monkeypatch):
         monkeypatch.setattr(self.testclient, '_send_request', mock_request_404)
         ref_madeupkeyword= 'blahdontexist'
-        self.testclient.get_url_stats(ref_madeupkeyword)
+        with pytest.raises(YourlsKeywordError):
+            self.testclient.get_url_stats(ref_madeupkeyword)
 
     def test_empty_url(self):
         with pytest.raises(KeyError):

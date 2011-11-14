@@ -99,10 +99,10 @@ class YourlsClient():
         """
         args = {'action':'shorturl','url':url}
 
-        if custom is not None:
+        if custom is not None and custom != "":
             args['keyword'] = custom
-            
-        if title is not None:
+
+        if title is not None and title != "":
             args['title'] = title
 
         raw_data = json.loads(self._send_request(args))
