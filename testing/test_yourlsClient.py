@@ -155,3 +155,6 @@ class TestYourlsClient():
         ref_madeupkeyword= 'blahdontexist'
         self.testclient.get_url_stats(ref_madeupkeyword)
 
+    def test_empty_url(self):
+        with pytest.raises(KeyError):
+            yourls.client.YourlsClient('', test_user, test_pass)

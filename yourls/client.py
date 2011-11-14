@@ -52,9 +52,8 @@ class YourlsClient():
         :param token: The signature token to use (not needed with username/password combo)
         """
 
-        if apiurl is None:
-            print "api url is required"
-            sys.exit(2)
+        if apiurl is None or apiurl == "":
+            raise KeyError("An api url is required")
         else:
             self.apiurl = apiurl
 
