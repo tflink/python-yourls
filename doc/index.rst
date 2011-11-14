@@ -1,7 +1,4 @@
-.. Yourls Client documentation master file, created by
-   sphinx-quickstart on Fri Jul 29 10:30:13 2011.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. _main
 
 YOURLS Client
 =========================================
@@ -23,6 +20,7 @@ The code can be checked out from the github repository:
 
 Or the code can be downloaded as a tarball from github:
   * https://github.com/downloads/tflink/python-yourls/python-yourls-0.1.1.tar.gz
+
 API Documentation
 -----------------
 .. automodule:: client
@@ -33,6 +31,8 @@ API Documentation
 
 .. toctree::
    :maxdepth: 2
+
+   changelog
 
 Indices and tables
 ==================
