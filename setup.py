@@ -12,7 +12,7 @@ class PyTest(Command):
         raise SystemExit(errno)
 
 setup(name='Yourls',
-      version='0.1.2',
+      version='0.2.0',
       description='Python client for the yourls URL shortener',
       author='Tim Flink',
       author_email='tflink@fedoraproject.org',

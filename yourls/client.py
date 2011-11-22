@@ -41,10 +41,9 @@ class YourlsClient():
         :param username: The username to login with (not needed with signature token)
         :param password: The password to login with (not needed with signature token)
         :param token: The signature token to use (not needed with username/password combo)
-
         :throws: YourlsError for incorrent parameters
-        """
 
+        """
         self.data_format = 'json'
 
         if not apiurl:
@@ -62,17 +61,48 @@ class YourlsClient():
             self.std_args = {'username':self.username, 'password':self.password,
                              'format':self.data_format}
 
+
     def _send_request(self, args):
+        """Encapsulates the actual sending of a request to a YOURLS instance
+
+        :param args: The arguments to send to YOURLS
+
+        """
         urlargs = urllib.urlencode(self._make_args(args))
         req = urllib2.Request(self.apiurl)
         req.add_data(urlargs)
         r = urllib2.urlopen(req)
         data = r.read()
-        print data
         return data
 
+
     def _make_args(self, new_args):
+        """Convenience method for putting args into the proper format
+
+        :param new_args: Dictionary containing the args to pass on
+
+        """
         return dict(self.std_args.items() + new_args.items())
+
+
+    def _base_request(self, args, url):
+        """Encapsulates common code and error handling for the access methods
+
+        :param args: The arguments to send to YOURLS
+        :param url: The url (short or long) arg being used in the request
+        :raises: YourlsOperationError
+
+        """
+        try:
+            data = json.loads(self._send_request(args))
+        except urllib2.URLError as error:
+            raise YourlsOperationError(url, str(error))
+
+        if 'errorCode' in data:
+            raise YourlsOperationError(url, data['message'])
+
+        return data
+
 
     def shorten(self, url, custom = None, title = None):
         """Request a shortened URL from YOURLS with an optional keyword request
@@ -96,12 +126,9 @@ class YourlsClient():
             args['title'] = title
 
         # shorten
-        raw_data = json.loads(self._send_request(args))
+        raw_data = self._base_request(args, url)
 
         # parse result
-        if 'errorCode' in raw_data:
-            raise YourlsOperationError(url, raw_data['message'])
-
         if raw_data['status'] == 'fail' and raw_data['code'] == 'error:keyword':
             raise YourlsOperationError(url, raw_data['message'])
 
@@ -121,15 +148,13 @@ class YourlsClient():
         """
         args = {'action' : 'expand', 'shorturl' : shorturl, 'format' : 'json'}
 
-        raw_data = json.loads(self._send_request(args))
-
-        if 'errorCode' in raw_data:
-            raise YourlsOperationError(shorturl, raw_data['message'])
+        raw_data = self._base_request(args, shorturl)
 
         if not 'longurl' in raw_data:
             raise YourlsOperationError(shorturl, raw_data['message'])
 
         return raw_data['longurl']
+
 
     def get_url_stats(self, shorturl):
         """Get statistics about a shortened URL
@@ -142,11 +167,7 @@ class YourlsClient():
 
         args = {'action' : 'url-stats', 'shorturl' : shorturl, 'format' : 'json'}
 
-        raw_data = json.loads(self._send_request(args))
-        print raw_data
-
-        if 'errorCode' in raw_data:
-            raise YourlsOperationError(shorturl, raw_data['message'])
+        raw_data = self._base_request(args, shorturl)
 
         if raw_data['statusCode'] != 200:
             raise YourlsOperationError(shorturl, raw_data['message'])

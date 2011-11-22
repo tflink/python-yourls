@@ -1,4 +1,4 @@
-.. _main
+.. _main:
 
 YOURLS Client
 =========================================
@@ -13,16 +13,24 @@ Simple example of shortening a URL::
     c = yourls.client.YourlsClient('http://localhost/yourls/yourls-api.php', username='username', password='password')
     url = c.shorten('http://autoqa.fedorahosted.org/autoqa', custom='autoqa')
 
+News
+-------------
+There has been a change in how errors are thrown in 0.2.0, please see the API
+documenatation for details.
+
 Code Download
 -------------
 The code can be checked out from the github repository:
   * ``git clone git://github.com/tflink/python-yourls.git``
 
 Or the code can be downloaded as a tarball from github:
-  * https://github.com/downloads/tflink/python-yourls/python-yourls-0.1.1.tar.gz
+  * https://github.com/downloads/tflink/python-yourls/python-yourls-0.2.0.tar.gz
 
 API Documentation
 -----------------
+.. automodule:: yourls
+    :members:
+
 .. automodule:: client
     :members:
 
