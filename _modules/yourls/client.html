@@ -6,13 +6,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>yourls.client &mdash; Yourls Client v0.1.2 documentation</title>
+    <title>yourls.client &mdash; Yourls Client v0.2.0 documentation</title>
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.1.2',
+        VERSION:     '0.2.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -21,8 +21,8 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="Yourls Client v0.1.2 documentation" href="../../index.html" />
-    <link rel="up" title="Module code" href="../index.html" /> 
+    <link rel="top" title="Yourls Client v0.2.0 documentation" href="../../index.html" />
+    <link rel="up" title="yourls" href="../yourls.html" /> 
   </head>
   <body>
     <div class="related">
@@ -34,8 +34,9 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">Yourls Client v0.1.2 documentation</a> &raquo;</li>
-          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+        <li><a href="../../index.html">Yourls Client v0.2.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../yourls.html" accesskey="U">yourls</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -90,36 +91,22 @@
 
 <div class="viewcode-block" id="YourlsClient"><a class="viewcode-back" href="../../index.html#yourls.client.YourlsClient">[docs]</a><span class="k">class</span> <span class="nc">YourlsClient</span><span class="p">():</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">apiurl</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The use of a username/password combo or a signature token is required</span>
-
-<span class="sd">        :param apiurl: The location of the api php file</span>
-<span class="sd">        :param username: The username to login with (not needed with signature token)</span>
-<span class="sd">        :param password: The password to login with (not needed with signature token)</span>
-<span class="sd">        :param token: The signature token to use (not needed with username/password combo)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">apiurl</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">apiurl</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">print</span> <span class="s">&quot;api url is required&quot;</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">apiurl</span> <span class="o">=</span> <span class="n">apiurl</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">data_format</span> <span class="o">=</span> <span class="s">&#39;json&#39;</span>
-
         <span class="k">if</span> <span class="n">username</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">password</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">token</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-                <span class="k">print</span> <span class="s">&quot;username and password or signature token are required&quot;</span>
-                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">std_args</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;signature&#39;</span> <span class="p">:</span> <span class="n">token</span><span class="p">,</span> <span class="s">&#39;format&#39;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_format</span><span class="p">}</span>
-
+            <span class="k">print</span> <span class="s">&quot;username and password are required&quot;</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">username</span> <span class="o">=</span> <span class="n">username</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">password</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">std_args</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;username&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="s">&#39;password&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">password</span><span class="p">,</span>
-                             <span class="s">&#39;format&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">data_format</span><span class="p">}</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_format</span> <span class="o">=</span> <span class="s">&#39;json&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">std_args</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;username&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="s">&#39;password&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">password</span><span class="p">,</span> <span class="s">&#39;format&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">data_format</span><span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">_send_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
         <span class="n">urlargs</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">urlencode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_make_args</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
@@ -156,38 +143,11 @@
         <span class="k">return</span> <span class="n">raw_data</span><span class="p">[</span><span class="s">&#39;shorturl&#39;</span><span class="p">]</span>
 
 </div>
+    <span class="k">def</span> <span class="nf">get_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shorturl</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&#39;get_stats has not yet been implemented&#39;</span><span class="p">)</span>
+
 <div class="viewcode-block" id="YourlsClient.expand"><a class="viewcode-back" href="../../index.html#yourls.client.YourlsClient.expand">[docs]</a>    <span class="k">def</span> <span class="nf">expand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shorturl</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Expand a shortened URL to its original form</span>
-
-<span class="sd">        :param shorturl: The URL to expand</span>
-<span class="sd">        :returns: str -- The expanded URL</span>
-<span class="sd">        :raises: YourlsKeywordError</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">args</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;action&#39;</span> <span class="p">:</span> <span class="s">&#39;expand&#39;</span><span class="p">,</span> <span class="s">&#39;shorturl&#39;</span> <span class="p">:</span> <span class="n">shorturl</span><span class="p">,</span> <span class="s">&#39;format&#39;</span> <span class="p">:</span> <span class="s">&#39;json&#39;</span><span class="p">}</span>
-
-        <span class="n">raw_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_send_request</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">&#39;[Ee]rror: short URL not found&#39;</span><span class="p">,</span> <span class="n">raw_data</span><span class="p">[</span><span class="s">&#39;message&#39;</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">YourlsKeywordError</span><span class="p">(</span><span class="n">shorturl</span><span class="p">,</span> <span class="n">raw_data</span><span class="p">[</span><span class="s">&#39;message&#39;</span><span class="p">])</span>
-
-        <span class="k">return</span> <span class="n">raw_data</span><span class="p">[</span><span class="s">&#39;longurl&#39;</span><span class="p">]</span>
-</div>
-<div class="viewcode-block" id="YourlsClient.get_url_stats"><a class="viewcode-back" href="../../index.html#yourls.client.YourlsClient.get_url_stats">[docs]</a>    <span class="k">def</span> <span class="nf">get_url_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shorturl</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get statistics about a shortened URL</span>
-
-<span class="sd">        :param shorturl: The URL to expand</span>
-<span class="sd">        :returns: a list of stuff - FIXME, this isn&#39;t complete</span>
-<span class="sd">        :raises: YourlsKeywordError</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="n">args</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;action&#39;</span> <span class="p">:</span> <span class="s">&#39;url-stats&#39;</span><span class="p">,</span> <span class="s">&#39;shorturl&#39;</span> <span class="p">:</span> <span class="n">shorturl</span><span class="p">,</span> <span class="s">&#39;format&#39;</span> <span class="p">:</span> <span class="s">&#39;json&#39;</span><span class="p">}</span>
-
-        <span class="n">raw_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_send_request</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">&#39;[Ee]rror: short URL not found&#39;</span><span class="p">,</span> <span class="n">raw_data</span><span class="p">[</span><span class="s">&#39;message&#39;</span><span class="p">])</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">YourlsKeywordError</span><span class="p">(</span><span class="n">shorturl</span><span class="p">,</span> <span class="n">raw_data</span><span class="p">[</span><span class="s">&#39;message&#39;</span><span class="p">])</span>
-
-        <span class="k">return</span> <span class="n">raw_data</span><span class="p">[</span><span class="s">&#39;link&#39;</span><span class="p">]</span></div></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&#39;expand has not yet been implemented&#39;</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>
@@ -221,8 +181,9 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">Yourls Client v0.1.2 documentation</a> &raquo;</li>
-          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+        <li><a href="../../index.html">Yourls Client v0.2.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../yourls.html" >yourls</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

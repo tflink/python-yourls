@@ -6,13 +6,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>YOURLS Client &mdash; Yourls Client v0.1.2 documentation</title>
+    <title>YOURLS Client &mdash; Yourls Client v0.2.0 documentation</title>
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.1.2',
+        VERSION:     '0.2.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -21,7 +21,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Yourls Client v0.1.2 documentation" href="#" />
+    <link rel="top" title="Yourls Client v0.2.0 documentation" href="#" />
     <link rel="next" title="Changelog" href="changelog.html" /> 
   </head>
   <body>
@@ -37,7 +37,7 @@
         <li class="right" >
           <a href="changelog.html" title="Changelog"
              accesskey="N">next</a> |</li>
-        <li><a href="#">Yourls Client v0.1.2 documentation</a> &raquo;</li> 
+        <li><a href="#">Yourls Client v0.2.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -47,7 +47,7 @@
           <div class="body">
             
   <div class="section" id="yourls-client">
-<h1>YOURLS Client<a class="headerlink" href="#yourls-client" title="Permalink to this headline">¶</a></h1>
+<span id="main"></span><h1>YOURLS Client<a class="headerlink" href="#yourls-client" title="Permalink to this headline">¶</a></h1>
 <p>This small library was created to provide an easy interface to YOURLS from
 a python program.</p>
 <p>Simple example of shortening a URL:</p>
@@ -56,6 +56,11 @@ a python program.</p>
 <span class="n">c</span> <span class="o">=</span> <span class="n">yourls</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">YourlsClient</span><span class="p">(</span><span class="s">&#39;http://localhost/yourls/yourls-api.php&#39;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s">&#39;username&#39;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s">&#39;password&#39;</span><span class="p">)</span>
 <span class="n">url</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">shorten</span><span class="p">(</span><span class="s">&#39;http://autoqa.fedorahosted.org/autoqa&#39;</span><span class="p">,</span> <span class="n">custom</span><span class="o">=</span><span class="s">&#39;autoqa&#39;</span><span class="p">)</span>
 </pre></div>
+</div>
+<div class="section" id="news">
+<h2>News<a class="headerlink" href="#news" title="Permalink to this headline">¶</a></h2>
+<p>There has been a change in how errors are thrown in 0.2.0, please see the API
+documenatation for details.</p>
 </div>
 <div class="section" id="code-download">
 <h2>Code Download<a class="headerlink" href="#code-download" title="Permalink to this headline">¶</a></h2>
@@ -67,20 +72,26 @@ a python program.</p>
 </dd>
 <dt>Or the code can be downloaded as a tarball from github:</dt>
 <dd><ul class="first last simple">
-<li><a class="reference external" href="https://github.com/downloads/tflink/python-yourls/python-yourls-0.1.1.tar.gz">https://github.com/downloads/tflink/python-yourls/python-yourls-0.1.1.tar.gz</a></li>
+<li><a class="reference external" href="https://github.com/downloads/tflink/python-yourls/python-yourls-0.2.0.tar.gz">https://github.com/downloads/tflink/python-yourls/python-yourls-0.2.0.tar.gz</a></li>
 </ul>
 </dd>
 </dl>
 </div>
-<div class="section" id="module-client">
-<span id="api-documentation"></span><h2>API Documentation<a class="headerlink" href="#module-client" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="module-yourls.client"></span><dl class="exception">
-<dt id="client.YourlsKeywordError">
-<em class="property">exception </em><tt class="descclassname">client.</tt><tt class="descname">YourlsKeywordError</tt><big>(</big><em>url</em>, <em>message</em><big>)</big><a class="reference internal" href="_modules/client.html#YourlsKeywordError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#client.YourlsKeywordError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Used when there are keyword conflicts in requested custom URLs</p>
+<div class="section" id="module-yourls">
+<span id="api-documentation"></span><h2>API Documentation<a class="headerlink" href="#module-yourls" title="Permalink to this headline">¶</a></h2>
+<dl class="exception">
+<dt id="yourls.YourlsError">
+<em class="property">exception </em><tt class="descclassname">yourls.</tt><tt class="descname">YourlsError</tt><big>(</big><em>message</em><big>)</big><a class="reference internal" href="_modules/yourls.html#YourlsError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yourls.YourlsError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base exception for all Yourls exceptions</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="exception">
+<dt id="yourls.YourlsOperationError">
+<em class="property">exception </em><tt class="descclassname">yourls.</tt><tt class="descname">YourlsOperationError</tt><big>(</big><em>url</em>, <em>message</em><big>)</big><a class="reference internal" href="_modules/yourls.html#YourlsOperationError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yourls.YourlsOperationError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Error during URL operations</p>
+</dd></dl>
+
+<span class="target" id="module-client"></span><span class="target" id="module-yourls.client"></span><dl class="class">
 <dt id="yourls.client.YourlsClient">
 <em class="property">class </em><tt class="descclassname">yourls.client.</tt><tt class="descname">YourlsClient</tt><big>(</big><em>apiurl</em>, <em>username=None</em>, <em>password=None</em>, <em>token=None</em><big>)</big><a class="reference internal" href="_modules/yourls/client.html#YourlsClient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yourls.client.YourlsClient" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
@@ -95,7 +106,7 @@ a python program.</p>
 </tr>
 <tr class="field"><th class="field-name">Returns:</th><td class="field-body">str &#8211; The expanded URL</td>
 </tr>
-<tr class="field"><th class="field-name">Raises :</th><td class="field-body">YourlsKeywordError</td>
+<tr class="field"><th class="field-name">Raises :</th><td class="field-body">YourlsOperationError</td>
 </tr>
 </tbody>
 </table>
@@ -103,7 +114,7 @@ a python program.</p>
 
 <dl class="method">
 <dt id="yourls.client.YourlsClient.get_url_stats">
-<tt class="descname">get_url_stats</tt><big>(</big><em>shorturl</em><big>)</big><a class="reference internal" href="_modules/yourls/client.html#YourlsClient.get_url_stats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#yourls.client.YourlsClient.get_url_stats" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">get_url_stats</tt><big>(</big><em>shorturl</em><big>)</big><a class="headerlink" href="#yourls.client.YourlsClient.get_url_stats" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get statistics about a shortened URL</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -113,7 +124,7 @@ a python program.</p>
 </tr>
 <tr class="field"><th class="field-name">Returns:</th><td class="field-body">a list of stuff - FIXME, this isn&#8217;t complete</td>
 </tr>
-<tr class="field"><th class="field-name">Raises :</th><td class="field-body">YourlsKeywordError</td>
+<tr class="field"><th class="field-name">Raises :</th><td class="field-body">YourlsOperationError</td>
 </tr>
 </tbody>
 </table>
@@ -137,7 +148,7 @@ a python program.</p>
 <tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">str &#8211; The short URL</p>
 </td>
 </tr>
-<tr class="field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">YourlsKeywordError</p>
+<tr class="field"><th class="field-name">Raises :</th><td class="field-body"><p class="first last">YourlsOperationError</p>
 </td>
 </tr>
 </tbody>
@@ -149,6 +160,7 @@ a python program.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-2-0-2011-11-21">Version 0.2.0 (2011-11-21)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-1-2-2011-11-14">Version 0.1.2 (2011-11-14)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-1-1-2011-08-25">Version 0.1.1 (2011-08-25)</a></li>
 </ul>
@@ -176,8 +188,9 @@ a python program.</p>
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">YOURLS Client</a><ul>
+<li><a class="reference internal" href="#news">News</a></li>
 <li><a class="reference internal" href="#code-download">Code Download</a></li>
-<li><a class="reference internal" href="#module-client">API Documentation</a><ul>
+<li><a class="reference internal" href="#module-yourls">API Documentation</a><ul>
 </ul>
 </li>
 </ul>
@@ -222,7 +235,7 @@ a python program.</p>
         <li class="right" >
           <a href="changelog.html" title="Changelog"
              >next</a> |</li>
-        <li><a href="#">Yourls Client v0.1.2 documentation</a> &raquo;</li> 
+        <li><a href="#">Yourls Client v0.2.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
