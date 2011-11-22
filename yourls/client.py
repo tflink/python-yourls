@@ -27,19 +27,10 @@
 .. moduleauthor:: Tim Flink <tflink@redhat.com>
 """
 
-import sys
 import urllib
 import urllib2
 import json
-import re
-
-class YourlsKeywordError(Exception):
-    """Used when there are keyword conflicts in requested custom URLs"""
-    def __init__(self, url, message):
-        self.url = url
-        self.message = message
-    def __str__(self):
-        return repr('Error shortening url %s - %s' % (self.url, self.message))
+from yourls import YourlsError, YourlsOperationError
 
 class YourlsClient():
 
@@ -50,28 +41,26 @@ class YourlsClient():
         :param username: The username to login with (not needed with signature token)
         :param password: The password to login with (not needed with signature token)
         :param token: The signature token to use (not needed with username/password combo)
-        """
 
-        if apiurl is None or apiurl == "":
-            raise KeyError("An api url is required")
-        else:
-            self.apiurl = apiurl
+        :throws: YourlsError for incorrent parameters
+        """
 
         self.data_format = 'json'
 
-        if username is None or password is None:
-            if token is None:
-                print "username and password or signature token are required"
-                sys.exit(2)
+        if not apiurl:
+            raise YourlsError("An api url is required")
+        self.apiurl = apiurl
+
+        if not username or not password:
+            if not token:
+                raise YourlsError("username and password or signature token are required")
             else:
                 self.std_args = {'signature' : token, 'format' : self.data_format}
-
         else:
             self.username = username
             self.password = password
             self.std_args = {'username':self.username, 'password':self.password,
                              'format':self.data_format}
-
 
     def _send_request(self, args):
         urlargs = urllib.urlencode(self._make_args(args))
@@ -79,6 +68,7 @@ class YourlsClient():
         req.add_data(urlargs)
         r = urllib2.urlopen(req)
         data = r.read()
+        print data
         return data
 
     def _make_args(self, new_args):
@@ -94,21 +84,29 @@ class YourlsClient():
         :param title: Use the given title instead of download it from the URL, this will increase performances
         :type title: str
         :returns: str -- The short URL
-        :raises: YourlsKeywordError
+        :raises: YourlsOperationError
 
         """
         args = {'action':'shorturl','url':url}
 
-        if custom is not None and custom != "":
+        if custom:
             args['keyword'] = custom
 
-        if title is not None and title != "":
+        if title:
             args['title'] = title
 
+        # shorten
         raw_data = json.loads(self._send_request(args))
-        if raw_data['status'] == 'fail':
-            if re.search('Short URL [a-zA-Z0-9\\-]+ already exists in database', raw_data['message']) is not None:
-                raise YourlsKeywordError(url, raw_data['message'])
+
+        # parse result
+        if 'errorCode' in raw_data:
+            raise YourlsOperationError(url, raw_data['message'])
+
+        if raw_data['status'] == 'fail' and raw_data['code'] == 'error:keyword':
+            raise YourlsOperationError(url, raw_data['message'])
+
+        if not 'shorturl' in raw_data:
+            raise YourlsOperationError(url, 'Unknown error: %s' % raw_data['message'])
 
         return raw_data['shorturl']
 
@@ -118,14 +116,18 @@ class YourlsClient():
 
         :param shorturl: The URL to expand
         :returns: str -- The expanded URL
-        :raises: YourlsKeywordError
+        :raises: YourlsOperationError
 
         """
         args = {'action' : 'expand', 'shorturl' : shorturl, 'format' : 'json'}
 
         raw_data = json.loads(self._send_request(args))
-        if re.search('[Ee]rror: short URL not found', raw_data['message']) is not None:
-            raise YourlsKeywordError(shorturl, raw_data['message'])
+
+        if 'errorCode' in raw_data:
+            raise YourlsOperationError(shorturl, raw_data['message'])
+
+        if not 'longurl' in raw_data:
+            raise YourlsOperationError(shorturl, raw_data['message'])
 
         return raw_data['longurl']
 
@@ -134,14 +136,19 @@ class YourlsClient():
 
         :param shorturl: The URL to expand
         :returns: a list of stuff - FIXME, this isn't complete
-        :raises: YourlsKeywordError
+        :raises: YourlsOperationError
 
         """
 
         args = {'action' : 'url-stats', 'shorturl' : shorturl, 'format' : 'json'}
 
         raw_data = json.loads(self._send_request(args))
-        if re.search('[Ee]rror: short URL not found', raw_data['message']) is not None:
-            raise YourlsKeywordError(shorturl, raw_data['message'])
+        print raw_data
+
+        if 'errorCode' in raw_data:
+            raise YourlsOperationError(shorturl, raw_data['message'])
+
+        if raw_data['statusCode'] != 200:
+            raise YourlsOperationError(shorturl, raw_data['message'])
 
         return raw_data['link']

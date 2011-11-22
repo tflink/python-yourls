@@ -1,7 +1,9 @@
 env_yourls
 testing/__pycache__
 *.pyc
+*.pyo
 *.swp
 build
 dist
 yourls_client/build
+.ropeproject
