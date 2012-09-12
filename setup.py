@@ -20,5 +20,8 @@ setup(name='Yourls',
       packages=['yourls'],
       package_dir={'yourls':'yourls'},
       py_modules=['yourls'],
-      cmdclass = {'test' : PyTest}
+      cmdclass = {'test' : PyTest},
+      entry_points={
+            'console_scripts':['yourls = yourls.client:main',]
+          },
      )

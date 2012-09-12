@@ -27,9 +27,11 @@
 .. moduleauthor:: Tim Flink <tflink@redhat.com>
 """
 
+import sys
+import json
 import urllib
 import urllib2
-import json
+
 from yourls import YourlsError, YourlsOperationError
 
 class YourlsClient():
@@ -173,3 +175,90 @@ class YourlsClient():
             raise YourlsOperationError(shorturl, raw_data['message'])
 
         return raw_data['link']
+
+def get_server(apiurl, **kwargs):
+    kw = dict(apiurl=apiurl)
+    for key in ["username", "password", "token"]:
+        value = kwargs.get(key, None)
+        if value:
+            kw[key] = value
+    return YourlsClient(**kw)
+
+def shorten(url, keyword, title=None, server=None, **kwargs):
+    if server is None:
+        server = get_server(**kwargs)
+    return server.shorten(url, custom=keyword, title=title)
+
+def expand(url, server=None, **kwargs):
+    if server is None:
+        server = get_server(**kwargs)
+    return server.expand(url)
+
+def get_url_stats(url, server=None, **kwargs):
+    if server is None:
+        server = get_server(**kwargs)
+    return server.get_url_stats(url)
+
+def set_shorturl_parser(parser):
+    parser.add_argument("--apiurl", metavar="uri",
+        default="http://127.0.0.1/yourls-api.php",
+        help="Yourls API URL (%(default)s)")
+    parser.add_argument("--token", help="Token")
+    parser.add_argument("--username", help="Username")
+    parser.add_argument("--password", help="Password")
+
+def main():
+    """YourlsClient command line access"""
+    import argparse
+
+    parser = argparse.ArgumentParser(description='Yourls Client')
+
+    subparsers = parser.add_subparsers(dest="command")
+
+    #
+    #shorten command
+    parser_shorten = subparsers.add_parser('shorten', help="shorten url")
+
+    set_shorturl_parser(parser_shorten)
+
+    parser_shorten.add_argument("--keyword", type=unicode, help="keyword")
+    parser_shorten.add_argument("--title", type=unicode, help="title")
+    parser_shorten.add_argument("url", type=unicode, help="url")
+
+    parser_shorten.set_defaults(func=shorten)
+
+    #
+    #expand command
+    parser_expand = subparsers.add_parser('expand', help="expand url")
+
+    set_shorturl_parser(parser_expand)
+
+    parser_expand.add_argument("url", type=unicode, help="url")
+
+    parser_expand.set_defaults(func=expand)
+
+    #
+    #get_url_stats command
+    parser_get_url_stats = subparsers.add_parser(
+        'get_url_stats', help="get_url_stats url")
+
+    set_shorturl_parser(parser_get_url_stats)
+
+    parser_get_url_stats.add_argument("url", type=unicode, help="url")
+
+    parser_get_url_stats.set_defaults(func=get_url_stats)
+    
+    args = parser.parse_args()
+    try:
+        #fargs, fkwargs = config.func_args(args)
+        result = args.func(**vars(args))
+    except Exception, exc:
+        print >> sys.stderr, "FATAL! %s executing %s" % (
+            exc, args.func.func_name)
+        return 1
+    else:
+        return result
+
+if __name__ == '__main__':
+    exit(main())
+
