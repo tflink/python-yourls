@@ -32,21 +32,24 @@ import json
 import urllib
 import urllib2
 
-from yourls import YourlsError, YourlsOperationError
+from yourls import __version__, YourlsError, YourlsOperationError
 
 class YourlsClient():
 
-    def __init__(self, apiurl, username=None, password=None, token=None):
+    def __init__(self, apiurl, username=None, 
+                password=None, token=None, format='json'):
         """The use of a username/password combo or a signature token is required
 
         :param apiurl: The location of the api php file
         :param username: The username to login with (not needed with signature token)
         :param password: The password to login with (not needed with signature token)
         :param token: The signature token to use (not needed with username/password combo)
+        :param format: The default format for all messages
+        
         :throws: YourlsError for incorrent parameters
 
         """
-        self.data_format = 'json'
+        self.data_format = format
 
         if not apiurl:
             raise YourlsError("An api url is required")
@@ -106,26 +109,26 @@ class YourlsClient():
         return data
 
 
-    def shorten(self, url, custom = None, title = None):
+    def shorturl(self, url, keyword=None, title=None):
         """Request a shortened URL from YOURLS with an optional keyword request
 
         :param url: The URL to shorten
         :type url: str
-        :param custom: The custom keyword to request
-        :type custom: str
+        :param keyword: The keyword keyword to request
+        :type keyword: str
         :param title: Use the given title instead of download it from the URL, this will increase performances
         :type title: str
         :returns: str -- The short URL
         :raises: YourlsOperationError
 
         """
-        args = {'action':'shorturl','url':url}
+        args = {'action':'shorturl', 'url':url}
 
-        if custom:
-            args['keyword'] = custom
+        if keyword:
+            args['keyword'] = keyword
 
-        if title:
-            args['title'] = title
+        if keyword:
+            args['title'] = keyword
 
         # shorten
         raw_data = self._base_request(args, url)
@@ -139,6 +142,7 @@ class YourlsClient():
 
         return raw_data['shorturl']
 
+    shorten = shorturl
 
     def expand(self, shorturl):
         """Expand a shortened URL to its original form
@@ -158,7 +162,7 @@ class YourlsClient():
         return raw_data['longurl']
 
 
-    def get_url_stats(self, shorturl):
+    def url_stats(self, shorturl):
         """Get statistics about a shortened URL
 
         :param shorturl: The URL to expand
@@ -175,6 +179,41 @@ class YourlsClient():
             raise YourlsOperationError(shorturl, raw_data['message'])
 
         return raw_data['link']
+    get_url_stats = url_stats
+
+    def stats(self, filter, limit=100):
+        """Get statistics about your links
+
+        :param filter: either "top", "bottom", "rand" or "last"
+        :type filter: str
+        :param limit: maximum number of links to return
+        :type limit: int
+        :returns: a list of stuff - FIXME, this isn't complete
+        :raises: YourlsOperationError
+
+        """
+
+        args = {'action' : 'stats', 'filter' : filter, 
+                'limit':limit, 'format' : 'json'}
+
+        raw_data = self._base_request(args, shorturl)
+
+        if raw_data['statusCode'] != 200:
+            raise YourlsOperationError(shorturl, raw_data['message'])
+
+        return raw_data["stats"]
+
+    def db_stats(self):
+        """Get global link and click count
+
+        :returns: a list of stuff - FIXME, this isn't complete
+        :raises: YourlsOperationError
+
+        """
+
+        args = {'action' : 'db-stats', 'format' : 'json'}
+        raw_data = self._base_request(args, shorturl)
+        return raw_data
 
 def get_server(apiurl, **kwargs):
     kw = dict(apiurl=apiurl)
@@ -184,70 +223,99 @@ def get_server(apiurl, **kwargs):
             kw[key] = value
     return YourlsClient(**kw)
 
-def shorten(url, keyword, title=None, server=None, **kwargs):
+def shorturl(url, keyword, title=None, server=None, **kwargs):
     if server is None:
         server = get_server(**kwargs)
-    return server.shorten(url, custom=keyword, title=title)
+    return server.shorturl(url, keyword=keyword, title=title)
+shorten = shorturl
 
-def expand(url, server=None, **kwargs):
+def expand(shorturl, server=None, **kwargs):
     if server is None:
         server = get_server(**kwargs)
-    return server.expand(url)
+    return server.expand(shorturl)
 
-def get_url_stats(url, server=None, **kwargs):
+def url_stats(shorturl, server=None, **kwargs):
     if server is None:
         server = get_server(**kwargs)
-    return server.get_url_stats(url)
+    return server.url_stats(shorturl)
+get_url_stats = url_stats
 
-def set_shorturl_parser(parser):
+def stats(filter="top", limit=100, server=None, **kwargs):
+    if server is None:
+        server = get_server(**kwargs)
+    return server.stats(filter, limit)
+
+def db_stats(server=None, **kwargs):
+    if server is None:
+        server = get_server(**kwargs)
+    return server.db_stats()
+
+def set_yourls_parser(parser):
     parser.add_argument("--apiurl", metavar="uri",
-        default="http://127.0.0.1/yourls-api.php",
+        default="http://localhost/yourls/yourls-api.php",
         help="Yourls API URL (%(default)s)")
     parser.add_argument("--token", help="Token")
     parser.add_argument("--username", help="Username")
     parser.add_argument("--password", help="Password")
 
 def main():
-    """YourlsClient command line access"""
+    """Yourls command line access"""
+    
     import argparse
 
-    parser = argparse.ArgumentParser(description='Yourls Client')
+    parser = argparse.ArgumentParser(
+        description='Yourls Client',
+        version="%(prog)s " + __version__
+        )
 
     subparsers = parser.add_subparsers(dest="command")
 
     #
-    #shorten command
-    parser_shorten = subparsers.add_parser('shorten', help="shorten url")
+    #shorturl command
+    parser_shorturl = subparsers.add_parser('shorturl', 
+        help="get short URL for a link")
 
-    set_shorturl_parser(parser_shorten)
+    set_yourls_parser(parser_shorturl)
 
-    parser_shorten.add_argument("--keyword", type=unicode, help="keyword")
-    parser_shorten.add_argument("--title", type=unicode, help="title")
-    parser_shorten.add_argument("url", type=unicode, help="url")
+    parser_shorturl.add_argument("url", type=unicode, 
+        help="the url to shorten")
+    parser_shorturl.add_argument("--keyword", type=unicode, 
+        help="optional keyword for custom short URLs")
+    parser_shorturl.add_argument("--title", type=unicode, 
+        help="title")
+    parser_shorturl.set_defaults(func=shorturl)
 
-    parser_shorten.set_defaults(func=shorten)
-
-    #
     #expand command
-    parser_expand = subparsers.add_parser('expand', help="expand url")
-
-    set_shorturl_parser(parser_expand)
-
-    parser_expand.add_argument("url", type=unicode, help="url")
-
+    parser_expand = subparsers.add_parser('expand', help="get long URL of a shorturl")
+    set_yourls_parser(parser_expand)
+    parser_expand.add_argument("url", type=unicode, 
+        help="the shorturl to expand (can be either 'abc' or 'http://site/abc')")
     parser_expand.set_defaults(func=expand)
 
-    #
-    #get_url_stats command
-    parser_get_url_stats = subparsers.add_parser(
-        'get_url_stats', help="get_url_stats url")
+    #url_stats command
+    parser_url_stats = subparsers.add_parser(
+        'url-stats', help="get stats about one short URL")
+    set_yourls_parser(parser_url_stats)
+    parser_url_stats.add_argument("shorturl", type=unicode, 
+        help="the shorturl for which to get stats (can be either 'abc' or 'http://site/abc')")
+    parser_url_stats.set_defaults(func=url_stats)
 
-    set_shorturl_parser(parser_get_url_stats)
-
-    parser_get_url_stats.add_argument("url", type=unicode, help="url")
-
-    parser_get_url_stats.set_defaults(func=get_url_stats)
+    #stats command
+    parser_stats = subparsers.add_parser(
+        'stats', help="get stats about your links")
+    set_yourls_parser(parser_stats)
+    parser_stats.add_argument("--limit", type=int, default=100,
+        help="maximum number of links to return")
+    parser_stats.add_argument("--filter", type=str, default="top",
+        help="the filter: either 'top', 'bottom' , 'rand' or 'last'")
+    parser_stats.set_defaults(func=stats)
     
+    #db_stats command
+    parser_db_stats = subparsers.add_parser(
+        'db-stats', help="get global link and click count")
+    set_yourls_parser(parser_db_stats)
+    parser_db_stats.set_defaults(func=db_stats)
+
     args = parser.parse_args()
     try:
         #fargs, fkwargs = config.func_args(args)
