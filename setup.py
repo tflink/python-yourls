@@ -1,5 +1,8 @@
 from distutils.core import setup, Command
 
+import yourls
+
+
 class PyTest(Command):
     user_options = []
     def initialize_options(self):
@@ -12,7 +15,7 @@ class PyTest(Command):
         raise SystemExit(errno)
 
 setup(name='Yourls',
-      version='0.2.0',
+      version=yourls.__version__,
       description='Python client for the yourls URL shortener',
       author='Tim Flink',
       author_email='tflink@fedoraproject.org',

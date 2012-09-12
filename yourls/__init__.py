@@ -20,6 +20,8 @@
 # Author:
 #       Tim Flink <tflink@redhat.com>
 
+__version__ = "0.2.0"
+
 class YourlsError(Exception):
     '''Base exception for all Yourls exceptions'''
     def __init__(self, message):
