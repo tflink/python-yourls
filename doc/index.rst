@@ -26,6 +26,10 @@ The code can be checked out from the github repository:
 Or the code can be downloaded as a tarball from github:
   * https://github.com/downloads/tflink/python-yourls/python-yourls-0.2.0.tar.gz
 
+Command Line
+-------------
+`python-yourls` also provides a command line interface.
+
 API Documentation
 -----------------
 .. automodule:: yourls
