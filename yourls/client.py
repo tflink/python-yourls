@@ -34,6 +34,8 @@ import urllib2
 
 from yourls import __version__, YourlsError, YourlsOperationError
 
+LIMIT=100
+
 class YourlsClient():
 
     def __init__(self, apiurl, username=None, 
@@ -181,7 +183,7 @@ class YourlsClient():
         return raw_data['link']
     get_url_stats = url_stats
 
-    def stats(self, filter, limit=100):
+    def stats(self, filter, limit=LIMIT):
         """Get statistics about your links
 
         :param filter: either "top", "bottom", "rand" or "last"
@@ -240,7 +242,7 @@ def url_stats(shorturl, server=None, **kwargs):
     return server.url_stats(shorturl)
 get_url_stats = url_stats
 
-def stats(filter="top", limit=100, server=None, **kwargs):
+def stats(filter="top", limit=LIMIT, server=None, **kwargs):
     if server is None:
         server = get_server(**kwargs)
     return server.stats(filter, limit)
@@ -251,12 +253,12 @@ def db_stats(server=None, **kwargs):
     return server.db_stats()
 
 def set_yourls_parser(parser):
-    parser.add_argument("--apiurl", metavar="uri",
+    parser.add_argument("-s", "--apiurl", metavar="uri",
         default="http://localhost/yourls/yourls-api.php",
-        help="Yourls API URL (%(default)s)")
-    parser.add_argument("--token", help="Token")
-    parser.add_argument("--username", help="Username")
-    parser.add_argument("--password", help="Password")
+        help="Yourls API URL. default=%(default)s")
+    parser.add_argument("-T", "--token", help="Token")
+    parser.add_argument("-u", "--username", help="Username")
+    parser.add_argument("-p", "--password", help="Password")
 
 def main():
     """Yourls command line access"""
@@ -276,13 +278,12 @@ def main():
         help="get short URL for a link")
 
     set_yourls_parser(parser_shorturl)
-
+    parser_shorturl.add_argument("-k", "--keyword", type=unicode, 
+        help="optional keyword for custom short URLs")
+    parser_shorturl.add_argument("-t", "--title", type=unicode, 
+        help="title")
     parser_shorturl.add_argument("url", type=unicode, 
         help="the url to shorten")
-    parser_shorturl.add_argument("--keyword", type=unicode, 
-        help="optional keyword for custom short URLs")
-    parser_shorturl.add_argument("--title", type=unicode, 
-        help="title")
     parser_shorturl.set_defaults(func=shorturl)
 
     #expand command
@@ -304,10 +305,11 @@ def main():
     parser_stats = subparsers.add_parser(
         'stats', help="get stats about your links")
     set_yourls_parser(parser_stats)
-    parser_stats.add_argument("--limit", type=int, default=100,
-        help="maximum number of links to return")
-    parser_stats.add_argument("--filter", type=str, default="top",
-        help="the filter: either 'top', 'bottom' , 'rand' or 'last'")
+    parser_stats.add_argument("-l","--limit", type=int, default=LIMIT,
+        help="maximum number of links to return. default=%(default)s")
+    parser_stats.add_argument("-f", "--filter", type=str, default="top",
+        choices=['top', 'bottom', 'rand', 'last'],
+        help="the filter: either 'top', 'bottom' , 'rand' or 'last'. default=%(default)s")
     parser_stats.set_defaults(func=stats)
     
     #db_stats command
