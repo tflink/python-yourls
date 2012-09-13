@@ -3,6 +3,13 @@
 Changelog
 =========================================
 
+Version 0.3.0 (2012-09-13)
+---------------------------
+ * Command Line interface
+ * Added commands to support Yourls 1.5.1
+ * Refactored tests using unittest
+ * Minor bugfixes
+
 Version 0.2.0 (2011-11-21)
 ---------------------------
  * Greatly improved error handling
