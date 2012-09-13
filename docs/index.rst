@@ -11,7 +11,7 @@ Simple example of shortening a URL::
     import yourls.client
 
     c = yourls.client.YourlsClient('http://localhost/yourls/yourls-api.php', username='username', password='password')
-    url = c.shorten('http://autoqa.fedorahosted.org/autoqa', custom='autoqa')
+    url = c.shorten('http://autoqa.fedorahosted.org/autoqa', keyword='autoqa')
 
 News
 -------------
