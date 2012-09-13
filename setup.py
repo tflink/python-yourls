@@ -1,7 +1,11 @@
+import sys
 from setuptools import setup, Command
 
 import yourls
 
+install_requires = []
+if (2,7) > sys.version_info:
+    install_requires.append("argparse>=1.2.1")
 
 setup(name='Yourls',
       version=yourls.__version__,
@@ -16,4 +20,5 @@ setup(name='Yourls',
       entry_points={
             'console_scripts':['yourls = yourls.client:main',]
           },
+      install_requires=install_requires,
      )
