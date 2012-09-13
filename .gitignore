@@ -1,9 +1,14 @@
-env_yourls
-testing/__pycache__
+*~
+*.lock
+*.DS_Store
 *.pyc
 *.pyo
 *.swp
+*.egg-info
 build
 dist
+env_yourls
 yourls_client/build
 .ropeproject
+.tm_properties
+
