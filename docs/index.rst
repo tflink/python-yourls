@@ -30,6 +30,15 @@ Command Line
 -------------
 `python-yourls` also provides a command line interface.
 
+Running tests
+-------------
+Running test units requires at least `YOURLS_TEST_TOKEN` environment 
+variable to be set. Otherwise `test_token_shorturl_and_expand` will fail.
+
+Here's an example on how to run unit tests::
+
+    env YOURLS_TEST_TOKEN='my_yourls_token' python setup.py test
+
 API Documentation
 -----------------
 .. automodule:: yourls
