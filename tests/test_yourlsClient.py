@@ -91,19 +91,10 @@ class YourlsTest(unittest.TestCase):
         self.assertRaises(YourlsError, 
             yourls.client.YourlsClient, (None,))
 
-    def test_token_access(self):
-        client = yourls.client.YourlsClient(test_apiurl, token=test_token)
-        self.assertEqual(self.url, self.shorturl_and_expand(client))
-
     def test_invalid_token(self):
-        client = yourls.client.YourlsClient(test_apiurl, 
-            token=test_token + "xxx")
-        self.assertRaises(YourlsOperationError, client.shorturl, (self.url,))
-
-    def test_login_access(self):
-        client = yourls.client.YourlsClient(test_apiurl, 
-            username=test_user, password=test_pass)
-        self.assertEqual(self.url, self.shorturl_and_expand(client))
+        self.assertRaises(YourlsError, 
+            yourls.client.YourlsClient, (test_apiurl,), 
+            dict(token=str(test_token) + "xxx"))
 
     def test_invalid_user(self):
         client = yourls.client.YourlsClient(test_apiurl, 
@@ -116,14 +107,27 @@ class YourlsTest(unittest.TestCase):
         self.assertRaises(YourlsOperationError, client.shorturl, (self.url,))
 
     def test_non_existing_keyword(self):
-        client = yourls.client.YourlsClient(test_apiurl, token=test_token)
+        client = yourls.client.YourlsClient(test_apiurl, 
+            username=test_user, password=test_pass)
         for i in range(1, 10):
             keyword = keyword_generator(30)
             self.assertRaises(YourlsOperationError, 
                 client.expand, (keyword,))
 
-    def test_stats(self):
+    def test_token_shorturl_and_expand(self):
+        assert test_token
+
         client = yourls.client.YourlsClient(test_apiurl, token=test_token)
+        self.assertEqual(self.url, self.shorturl_and_expand(client))
+
+    def test_login_shorturl_and_expand(self):
+        client = yourls.client.YourlsClient(test_apiurl, 
+            username=test_user, password=test_pass)
+        self.assertEqual(self.url, self.shorturl_and_expand(client))
+
+    def test_stats(self):
+        client = yourls.client.YourlsClient(test_apiurl, 
+            username=test_user, password=test_pass)
         
         keyword = keyword_generator()
         url = "http://www.gmail.com/"
