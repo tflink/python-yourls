@@ -2,16 +2,6 @@ from setuptools import setup, Command
 
 import yourls
 
-class PyTest(Command):
-    user_options = []
-    def initialize_options(self):
-        pass
-    def finalize_options(self):
-        pass
-    def run(self):
-        import subprocess
-        errno = subprocess.call(['py.test',  'testing'])
-        raise SystemExit(errno)
 
 setup(name='Yourls',
       version=yourls.__version__,
