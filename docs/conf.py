@@ -42,7 +42,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Yourls Client'
+project = u'python-yourls'
 copyright = u'2011, Tim Flink'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -166,7 +166,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'YourlsClientdoc'
+htmlhelp_basename = 'python-yourlsdoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -180,7 +180,7 @@ htmlhelp_basename = 'YourlsClientdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'YourlsClient.tex', u'Yourls Client Documentation',
+  ('index', 'python-yourls.tex', u'python-yourls Documentation',
    u'Tim Flink', 'manual'),
 ]
 
@@ -213,6 +213,6 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'yourlsclient', u'Yourls Client Documentation',
+    ('index', 'python-yourls', u'python-yourls Documentation',
      [u'Tim Flink'], 1)
 ]

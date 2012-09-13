@@ -7,7 +7,7 @@ install_requires = []
 if (2,7) > sys.version_info:
     install_requires.append("argparse>=1.2.1")
 
-setup(name='Yourls',
+setup(name='python-yourls',
       version=yourls.__version__,
       description='Python client for the yourls URL shortener',
       author='Tim Flink',
