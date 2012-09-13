@@ -15,7 +15,6 @@ setup(name='Yourls',
       url='http://tflink.github.com/python-yourls/',
       packages=['yourls'],
       package_dir={'yourls':'yourls'},
-      py_modules=['yourls'],
       test_suite="tests",
       entry_points={
             'console_scripts':['yourls = yourls.client:main',]
