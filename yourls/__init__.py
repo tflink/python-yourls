@@ -20,7 +20,7 @@
 # Author:
 #       Tim Flink <tflink@redhat.com>
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 class YourlsError(Exception):
     '''Base exception for all Yourls exceptions'''
