@@ -129,8 +129,8 @@ class YourlsClient():
         if keyword:
             args['keyword'] = keyword
 
-        if keyword:
-            args['title'] = keyword
+        if title:
+            args['title'] = title
 
         # shorten
         raw_data = self._base_request(args, url)
