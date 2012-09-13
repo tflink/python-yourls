@@ -3,7 +3,7 @@ python-yourls is a simple python based API client for the YOURLS URL shortener
 
 For more information on using the client, documentation has been written for
 sphinx (http://sphinx.pocoo.org/) and it can be built with:
-  $ cd doc
-  $ make html
+
+  $ python setup.py build_sphinx
 
 Current documentation is available at http://tflink.github.com/python-yourls
