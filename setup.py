@@ -1,7 +1,6 @@
-from distutils.core import setup, Command
+from setuptools import setup, Command
 
 import yourls
-
 
 class PyTest(Command):
     user_options = []
@@ -23,7 +22,7 @@ setup(name='Yourls',
       packages=['yourls'],
       package_dir={'yourls':'yourls'},
       py_modules=['yourls'],
-      cmdclass = {'test' : PyTest},
+      test_suite="tests",
       entry_points={
             'console_scripts':['yourls = yourls.client:main',]
           },
