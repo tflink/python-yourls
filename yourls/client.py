@@ -1,8 +1,6 @@
 # client.py
 #  - Python client for yourls
 #
-# Copyright 2011, Red Hat, Inc.
-#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
@@ -17,14 +15,14 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Author:
+# Original Author:
 #       Tim Flink <tflink@redhat.com>
+# Updates:
+#       Setu Shah
 
 """
 .. module:: yourls.client
-   :synopsis: A simple client for the YOURLS URL shortener
-
-.. moduleauthor:: Tim Flink <tflink@redhat.com>
+   :synopsis: A simple Python client for the YOURLS URL shortener.
 """
 
 import urllib
@@ -49,6 +47,7 @@ class YourlsClient():
         :param username: The username to login with (not needed with signature token)
         :param password: The password to login with (not needed with signature token)
         :param token: The signature token to use (not needed with username/password combo)
+        :param output_format: The format in which the API output should be requested. Possible options are `json`, `jsonp`, `xml` or `simple`
         :throws: YourlsError for incorrent parameters
 
         """
@@ -133,7 +132,7 @@ class YourlsClient():
         :type custom: str
         :param title: Use the given title instead of download it from the URL, this will increase performances
         :type title: str
-        :returns: str -- The short URL
+        :returns: str, str -- The short URL, the title of the original webpage
         :raises: YourlsOperationError
 
         """
@@ -180,7 +179,7 @@ class YourlsClient():
         """Get statistics about a shortened URL
 
         :param shorturl: The URL to expand
-        :returns: a list of stuff - FIXME, this isn't complete
+        :returns: dict -- Stats for the short-link passed
         :raises: YourlsOperationError
 
         """
@@ -198,8 +197,9 @@ class YourlsClient():
     def stats(self, filter, limit=10):
         """Get link-wise statistics.
 
-        :param shorturl: The URL to expand
-        :returns: a dict containing `total_links` and `total_clicks`
+        :param filter: The filter for requesting stats on links, options: `top`, `bottom`, `rand` or `last`
+        :param limit: The maximum number of links to request
+        :returns: (list, dict) -- A list containing stats for all filtered links, a dict containing overall stats
         :raises: YourlsOperationError
 
         """
@@ -221,7 +221,6 @@ class YourlsClient():
     def db_stats(self):
         """Get statistics about all links.
 
-        :param shorturl: The URL to expand
         :returns: a dict containing `total_links` and `total_clicks`
         :raises: YourlsOperationError
 
