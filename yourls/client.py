@@ -28,7 +28,15 @@
 """
 
 import urllib
-import urllib2
+try:
+    # Python 3
+    from urllib.parse import urlencode
+    from urllib.request import urlopen, Request
+    from urllib.error import URLError
+except ImportError:
+    # Python 2
+    from urllib import urlencode
+    from urllib2 import urlopen, Request, URLError
 import json
 from yourls import YourlsError, YourlsOperationError
 
@@ -42,7 +50,7 @@ class YourlsClient():
         :param password: The password to login with (not needed with signature token)
         :param token: The signature token to use (not needed with username/password combo)
         :throws: YourlsError for incorrent parameters
-
+        
         """
         self.data_format = 'json'
 
@@ -54,7 +62,9 @@ class YourlsClient():
             if not token:
                 raise YourlsError("username and password or signature token are required")
             else:
-                self.std_args = {'signature' : token, 'format' : self.data_format}
+                self.signature = token
+                self.std_args = {'signature': token, 'format': self.data_format}
+
         else:
             self.username = username
             self.password = password
@@ -68,10 +78,14 @@ class YourlsClient():
         :param args: The arguments to send to YOURLS
 
         """
-        urlargs = urllib.urlencode(self._make_args(args))
-        req = urllib2.Request(self.apiurl)
-        req.add_data(urlargs)
-        r = urllib2.urlopen(req)
+        urlargs = urlencode(self._make_args(args))
+        req = Request(self.apiurl)
+        try:
+            req.data = urlargs.encode('utf-8')
+            req.headers ={'User-Agent': 'Mozilla 5.0'}
+        except Exception as e:
+            req.add_data(urlargs)
+        r = urlopen(req)
         data = r.read()
         return data
 
@@ -82,10 +96,12 @@ class YourlsClient():
         :param new_args: Dictionary containing the args to pass on
 
         """
-        return dict(self.std_args.items() + new_args.items())
+        args = self.std_args.copy()
+        args.update(new_args)
+        return args
 
 
-    def _base_request(self, args, url):
+    def _base_request(self, args, url=None):
         """Encapsulates common code and error handling for the access methods
 
         :param args: The arguments to send to YOURLS
@@ -95,7 +111,7 @@ class YourlsClient():
         """
         try:
             data = json.loads(self._send_request(args))
-        except urllib2.URLError as error:
+        except URLError as error:
             raise YourlsOperationError(url, str(error))
 
         if 'errorCode' in data:
@@ -117,7 +133,7 @@ class YourlsClient():
         :raises: YourlsOperationError
 
         """
-        args = {'action':'shorturl','url':url}
+        args = {'action':'shorturl', 'url': url, 'format': self.data_format}
 
         if custom:
             args['keyword'] = custom
@@ -135,7 +151,7 @@ class YourlsClient():
         if not 'shorturl' in raw_data:
             raise YourlsOperationError(url, 'Unknown error: %s' % raw_data['message'])
 
-        return raw_data['shorturl']
+        return raw_data['shorturl'], raw_data['title']
 
 
     def expand(self, shorturl):
@@ -146,7 +162,7 @@ class YourlsClient():
         :raises: YourlsOperationError
 
         """
-        args = {'action' : 'expand', 'shorturl' : shorturl, 'format' : 'json'}
+        args = {'action' : 'expand', 'shorturl' : shorturl, 'format' : self.data_format}
 
         raw_data = self._base_request(args, shorturl)
 
@@ -156,7 +172,7 @@ class YourlsClient():
         return raw_data['longurl']
 
 
-    def get_url_stats(self, shorturl):
+    def url_stats(self, shorturl):
         """Get statistics about a shortened URL
 
         :param shorturl: The URL to expand
@@ -165,7 +181,7 @@ class YourlsClient():
 
         """
 
-        args = {'action' : 'url-stats', 'shorturl' : shorturl, 'format' : 'json'}
+        args = {'action' : 'url-stats', 'shorturl' : shorturl, 'format' : self.data_format}
 
         raw_data = self._base_request(args, shorturl)
 
