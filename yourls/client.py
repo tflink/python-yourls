@@ -42,7 +42,7 @@ from yourls import YourlsError, YourlsOperationError
 
 class YourlsClient():
 
-    def __init__(self, apiurl, username=None, password=None, token=None):
+    def __init__(self, apiurl, username=None, password=None, token=None, output_format='json'):
         """The use of a username/password combo or a signature token is required
 
         :param apiurl: The location of the api php file
@@ -50,17 +50,21 @@ class YourlsClient():
         :param password: The password to login with (not needed with signature token)
         :param token: The signature token to use (not needed with username/password combo)
         :throws: YourlsError for incorrent parameters
-        
+
         """
-        self.data_format = 'json'
+        if output_format not in ['json', 'jsonp', 'xml', 'simple']:
+            raise YourlsError("Type of output requested unavailable")
+
+
+        self.data_format = output_format
 
         if not apiurl:
-            raise YourlsError("An api url is required")
+            raise YourlsError("An API URL is required")
         self.apiurl = apiurl
 
         if not username or not password:
             if not token:
-                raise YourlsError("username and password or signature token are required")
+                raise YourlsError("Username and Password or signature token are required")
             else:
                 self.signature = token
                 self.std_args = {'signature': token, 'format': self.data_format}
@@ -189,3 +193,46 @@ class YourlsClient():
             raise YourlsOperationError(shorturl, raw_data['message'])
 
         return raw_data['link']
+
+
+    def stats(self, filter, limit=10):
+        """Get link-wise statistics.
+
+        :param shorturl: The URL to expand
+        :returns: a dict containing `total_links` and `total_clicks`
+        :raises: YourlsOperationError
+
+        """
+        if filter in ['top', 'bottom', 'rand', 'last']:
+            args = {'action': 'stats', 'filter': filter, 'format' : self.data_format}
+            if limit:
+                args['limit'] = limit
+        else:
+            raise YourlsError('filter incorrect')
+
+        raw_data = self._base_request(args)
+
+        if raw_data['statusCode'] != 200:
+            raise YourlsOperationError(filter, raw_data['message'])
+
+        return raw_data['links'], raw_data['stats']
+
+
+    def db_stats(self):
+        """Get statistics about all links.
+
+        :param shorturl: The URL to expand
+        :returns: a dict containing `total_links` and `total_clicks`
+        :raises: YourlsOperationError
+
+        """
+        args = {'action': 'db-stats', 'format' : self.data_format}
+
+        raw_data = self._base_request(args)
+
+        if raw_data['statusCode'] != 200:
+            raise YourlsOperationError(filter, raw_data['message'])
+
+        return raw_data['db-stats']
+
+
