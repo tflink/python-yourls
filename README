@@ -1,3 +1,14 @@
+========================================================================
+IMPORTANT NOTE:
+
+This project has been archived as it no longer works, would require
+non-trivial amounts of work to fix and there are alternative libraries
+available.
+
+One alternative is:
+https://github.com/razerm/yourls-python
+========================================================================
+
 python-yourls is a simple python based API client for the YOURLS URL shortener
 (http://yourls.org/).
 
